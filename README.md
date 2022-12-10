@@ -1,9 +1,7 @@
- Point-Pixel Fusion for Object Detection and Depth Estimation
+ # Point-Pixel Fusion for Object Detection and Depth Estimation
 
 <p align="center">
 	<a href="https://ieeexplore.ieee.org/abstract/document/9902697/">
-   
-	</a>
 </p>
 
 ### Contents
