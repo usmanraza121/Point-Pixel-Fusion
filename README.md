@@ -24,7 +24,7 @@
 
 ## Object Detection with Depth Infomration
 
-![](figures/result1.TIF)
+![](figures/results.gif)
 
 ## Demo
 
