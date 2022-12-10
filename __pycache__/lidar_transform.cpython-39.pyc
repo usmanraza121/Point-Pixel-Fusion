@@ -1,0 +1,26 @@
+a
+    VŒ[bj  ?                   @   s?   d dl Zd dlZd dlmZ d dlmZ d dl	m
+Z
+ d dlZd dlZd dlZd dlZd dlZG dd? de?Zdd? Zddd	?Zd
+d? Zee_dd? Zee_dS )?    N)?Imagec                   @   s   e Zd Zdd? Zdd? ZdS )?LiDAR2Camerac                 C   s\   | ? |?}|d }t?|ddg?| _|d }t?|ddg?| _|d }t?|ddg?| _d S )NZP2?   ?   ZTr_velo_camZR_rect)?read_calib_file?npZreshape?P?V2C?R0)?selfZ
+calib_fileZcalibsr   r	   r
+   ? r   ?/home/usman/visual_fusion/lidar_transform.py?__init__   s    
+zLiDAR2Camera.__init__c              
+   C   s?   i }t |d?èx}|?? D ]^}|?? }t|?dkr2q|?dd?\}}z t?dd? |?? D ??||< W q tyt   Y q0 qW d  ? n1 s?    Y  |S )z?Read in a calibration file and parse into a dictionary.
+        
+        ?rr   ?:?   c                 S   s   g | ]}t |??qS r   )?float)?.0?xr   r   r   ?<listcomp>)   ?    z0LiDAR2Camera.read_calib_file.<locals>.<listcomp>N)?open?readlines?rstrip?len?splitr   ?array?ValueError)r   ?filepath?data?f?line?key?valuer   r   r   r      s     &zLiDAR2Camera.read_calib_fileN)?__name__?__module__?__qualname__r   r   r   r   r   r   r      s   r   c                 C   s@   g }t ?| ?}t ?| ?}| D ]}t|| ?|k r|?|? q|S )N)?statistics?meanZstdev?abs?append)?distancesZinliersZmuZstdr   r   r   r   ?filter_outliers.   s    
+
+r,   ?closestc                 C   sF   |dkrt | ?S |dkr"t?| ?S |dkr4t?| ?S t?t| ??S d S )Nr-   Zaverage?random)?minr'   r(   r.   ZchoiceZmedian?sorted)r+   ?techniquer   r   r   ?get_best_distance8   s    
+
+r2   c                    s?  |? ? }g }tj?dd?? t?? fdd?td?D ??d d ?d d?f d ? g }|D ?]4}g }t| jjd ?D ]†}| j	|df }t
+|| j| |jd |jd d	d
+?dkrl|?|? ? td| ?d d ?f }	tj|tt?| j|df ??tt?| j|df ??fdt|	?dd? ql|j\}
+}}t|?dk?rzt|?}t|dd?}t?|d?|?t|d | ?t|d |
+ ?ftjdddtj? |?|? g }qR||fS )NZhsv?   c                    s   g | ]}? |??qS r   r   )r   ?i?Zcmapr   r   r   F   r   z'lidar_camera_fusion.<locals>.<listcomp>r   ?   r   r   göôôôôô?)Zshrink_factorTg     ?@?   ?ˇˇˇ)?colorZ	thicknessr-   )r1   z	{0:.2f} mg      ?)r6   r   r   )?copy?plt?cmZget_cmapr   r   ?rangeZimgfov_pts_2d?shapeZimgfov_pc_veloZrectContainsr*   ?int?cv2Zcircle?round?tupler   r,   r2   ZputText?formatZFONT_HERSHEY_SIMPLEXZLINE_AA)r   ?pred_bboxes?imageZimg_bisZbest_dr+   Zboxr4   Zdepthr9   ?h?w?_Zbest_distanceZdistances_to_keepr   r5   r   ?lidar_camera_fusionB   s*    0
+(
+F>
+rI   c           	      C   sH   |? ? }| ?|dd?dd?f |?}t|?\}}| ?||?\}}||fS )z!For a pair of 2 Calibrated ImagesNr   )r:   Zshow_lidar_on_imageZrun_obstacle_detectionrI   )	r   rE   Zpoint_cloudZimgZ	lidar_img?resultrD   Z	img_finalZ	best_distr   r   r   ?pipelinec   s
+    rK   )r-   )Znumpyr   r@   Zmatplotlib.pyplotZpyplotr;   Zmatplotlib.imagerE   ZmpimgZIPython.displayr   ?globZopen3d?o3dZyolov4r'   r.   ?objectr   r,   r2   rI   rK   r   r   r   r   ?<module>   s    !
+
+
+
