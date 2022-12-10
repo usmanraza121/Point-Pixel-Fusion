@@ -1,8 +1,8 @@
  Point-Pixel Fusion for Object Detection and Depth Estimation
 
 <p align="center">
-	<a href="mylink">
-    <img class="page-image" src="https://github.com/zllrunning/face-parsing.PyTorch/blob/master/6.jpg" >
+	<a href="https://ieeexplore.ieee.org/abstract/document/9902697/">
+   
 	</a>
 </p>
 
@@ -26,8 +26,8 @@
 
 ## Object Detection with Depth Infomration
 
-![](figures/result1.png)
+![](figures/result1.tif)
 
 ## Demo
 
-![](figures/Demo.png)
+![](figures/Demo.gif)
